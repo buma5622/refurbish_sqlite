@@ -8,4 +8,8 @@ class RegistratieForm(forms.ModelForm):
         fields = '__all__'
 
 
+class ReparatieForm(forms.ModelForm):
+    class Meta:
+        model = Computer
+        fields = ['afbeelding', 'gerepareerd']
 
