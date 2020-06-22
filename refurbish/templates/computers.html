@@ -6,6 +6,7 @@
     <title>Title</title>
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
     <link rel="stylesheet" href="{% static 'css/buttons.css' %}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 <body>
 
@@ -29,9 +30,23 @@
                     <th>Afbeelding</th>
                     <th>Gerepareerd</th>
                 </tr>
-
-                {% for computer in computers %}
-                    <tr>
+                <tr>
+                    <td><input type="text" value=""></td>
+                    <td>
+                        <select class="custom_select" name="type">
+                            <option value="laptop">Laptop</option>
+                            <option value="desktop">Desktop</option>
+                        </select>
+                    </td>
+                    <td><input type="text" value=""></td>
+                    <td><input id="processor" type="text" value=""></td>
+                    <td><input id="werkgeheugen" type="text" value=""></td>
+                    <td><input type="text" value=""></td>
+                    <td><input type="text" value=""></td>
+                    <td><input type="text" value=""></td>
+                </tr>
+                 {% for computer in computers %}
+                    <tr class="table_data" ondblclick="location.href='{% url 'computer_detail' computer.id %}'">
                         <td> {{ computer.id }} </td>
                         <td> {{ computer.merk }} </td>
                         <td> {{ computer.type }} </td>
@@ -49,5 +64,58 @@
             </table>
         </div>
     {% endif %}
+
+    <script>
+        $(document).ready(function(){
+
+            $("#processor").on('input', function() {
+              proccessor_value =  $("#processor").val()
+
+              $.ajax(
+              {
+                  url: "filter",
+                  data: {
+                            processor: proccessor_value,
+                        },
+                  success: function(computers) {
+                        var tableHeaderRowCount = 2;
+                        var table = document.getElementById('computers');
+                        var rowCount = table.rows.length;
+                        var tableRef = document.getElementById('computers').getElementsByTagName('tbody')[0];
+                        var row;
+
+                        for (var i = tableHeaderRowCount; i < rowCount; i++) {
+                            table.deleteRow(tableHeaderRowCount);
+                        }
+
+                        for(row = 0; row < computers.length; row++) {
+                            var newRow = tableRef.insertRow(tableRef.rows.length);
+
+                            if (computers[row].gerepareerd) {
+                                computers[row].gerepareerd = 'Ja';
+                            } else {
+                                computers[row].gerepareerd = 'Nee';
+                            }
+
+                            newRow.innerHTML = `<tr>
+                                                   <td> ${computers[row].id} </td>
+                                                   <td> ${computers[row].merk} </td>
+                                                   <td> ${computers[row].type} </td>
+                                                   <td> ${computers[row].processor} </td>
+                                                   <td> ${computers[row].werkgeheugen} </td>
+                                                   <td> ${computers[row].defecten} </td>
+                                                   <td> ${computers[row].afbeelding} </td>
+                                                   <td> ${computers[row].gerepareerd} </td>
+                                                <tr>`;
+
+                            var url = "location.href='{% url 'computer_detail' 1 %}'".replace(1, computers[row].id);
+                            newRow.setAttribute("ondblclick", url);
+                        }
+              }});
+            });
+        });
+    </script>
+
 </body>
+
 </html>

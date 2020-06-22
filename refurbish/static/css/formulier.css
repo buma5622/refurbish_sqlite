@@ -66,4 +66,7 @@ textarea {
     transform: translateX(120%);
 }
 
+.inline_form {
+    display: inline-block;
+}
 
